@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEFL iBT Diamond Masterclass Workspace</title>
+    <style>
+        :root {
+            --bg-deep: #0b0f17;
+            --panel-bg: #131a26;
+            --diamond-cyan: #06b6d4;
+            --diamond-glow: #22d3ee;
+            --silver-text: #e2e8f0;
+            --silver-muted: #94a3b8;
+            --silver-border: #334155;
+            --silver-accent: #cbd5e1;
+            --success: #10b981;
+            --error: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--silver-text);
+            line-height: 1.6;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--panel-bg);
+            border-radius: 16px;
+            border: 1px solid var(--silver-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 15px rgba(6, 182, 212, 0.15);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        @media (min-width: 480px) {
+            body { padding: 2.5rem 1rem; }
+            .container { padding: 3rem; }
+        }
+
+        /* Top Progress Bar & Steps Tracker */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--silver-border);
+            border-radius: 2px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--diamond-cyan), var(--diamond-glow));
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        h1, h2, h3 {
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        h1 { font-size: 1.8rem; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(6, 182, 212, 0.3); border-bottom: 1px solid var(--silver-border); padding-bottom: 0.75rem;}
+        h2 { font-size: 1.4rem; color: var(--diamond-cyan); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;}
+        h2::before { content: '◆'; font-size: 1rem; color: var(--silver-accent); }
+        h3 { font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--silver-accent); }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: var(--silver-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Strategy Box */
+        .grammar-box {
+            background-color: #1a2436;
+            border-left: 4px solid var(--diamond-cyan);
+            border-right: 1px solid var(--silver-border);
+            border-top: 1px solid var(--silver-border);
+            border-bottom: 1px solid var(--silver-border);
+            padding: 1.25rem;
+            border-radius: 4px 12px 12px 4px;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .grammar-box strong { color: #ffffff; }
+
+        .exercise-card {
+            background: #161f2e;
+            border: 1px solid var(--silver-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.75rem;
+            transition: box-shadow 0.2s ease;
+        }
+        .exercise-card:hover {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
+        }
+
+        .exercise-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--silver-text);
+            font-size: 1.05rem;
+        }
+
+        /* FORMAT 1: Options Grid (Multiple Choice) */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+
+        .option-btn {
+            background: #1e293b;
+            border: 1px solid var(--silver-border);
+            border-radius: 8px;
+            padding: 0.85rem 1.25rem;
+            text-align: left;
+            font-size: 0.95rem;
+            color: var(--silver-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--diamond-cyan);
+            background-color: #243249;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--error);
+            background-color: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+        }
+
+        /* FORMAT 2: Error Sentence Layout */
+        .error-sentence {
+            font-size: 1.05rem;
+            line-height: 2.3;
+            padding: 1rem;
+            background: #111827;
+            border-radius: 8px;
+            border: 1px solid var(--silver-border);
+            margin-bottom: 0.5rem;
+        }
+
+        .error-word {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0 0.4rem;
+            border-bottom: 2px dashed var(--silver-muted);
+            font-weight: 600;
+            color: #ffffff;
+            transition: all 0.15s ease;
+        }
+        .error-word:hover {
+            color: var(--diamond-cyan);
+            border-bottom-color: var(--diamond-cyan);
+        }
+
+        .error-word.correct {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border-bottom: 2px solid var(--success);
+        }
+
+        .error-word.wrong {
+            background-color: rgba(244, 63, 94, 0.2);
+            color: #fb7185;
+            border-bottom: 2px solid var(--error);
+            text-decoration: line-through;
+        }
+
+        /* FORMAT 3: Inline Dropdown Selectors */
+        .inline-select {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid var(--silver-border);
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            margin: 0 0.3rem;
+        }
+        .inline-select:focus {
+            border-color: var(--diamond-cyan);
+        }
+        .inline-select.correct { border-color: var(--success); color: #34d399; }
+        .inline-select.wrong { border-color: var(--error); color: #fb7185; }
+
+        /* FORMAT 4: Input Text Entries */
+        .text-entry-input {
+            background: #111827;
+            border: 1px solid var(--silver-border);
+            border-radius: 6px;
+            padding: 0.35rem 0.75rem;
+            color: #ffffff;
+            font-size: 0.95rem;
+            outline: none;
+            width: 160px;
+            transition: all 0.2s ease;
+            margin: 0 0.3rem;
+            text-align: center;
+        }
+        .text-entry-input:focus {
+            border-color: var(--diamond-cyan);
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+        }
+        .text-entry-input.correct { border-color: var(--success); background-color: rgba(16, 185, 129, 0.05); color: #34d399; }
+        .text-entry-input.wrong { border-color: var(--error); background-color: rgba(244, 63, 94, 0.05); color: #fb7185; }
+
+        .validation-row {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .verify-btn {
+            background: none;
+            border: 1px solid var(--silver-accent);
+            color: var(--silver-accent);
+            padding: 0.35rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .verify-btn:hover {
+            background: var(--silver-accent);
+            color: var(--bg-deep);
+        }
+
+        /* Feedback Elements */
+        .feedback-box {
+            margin-top: 0.75rem;
+            padding: 0.85rem 1.25rem;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-box.success {
+            display: block;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .feedback-box.error {
+            display: block;
+            background-color: rgba(244, 63, 94, 0.1);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .page-status {
+            font-weight: 700;
+            padding: 0.85rem;
+            border-radius: 8px;
+            text-align: center;
+            background: #1e293b;
+            border: 1px solid var(--silver-border);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.03em;
+        }
+
+        .page-status.ready {
+            background-color: rgba(6, 182, 212, 0.1);
+            color: var(--diamond-glow);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            text-shadow: 0 0 10px rgba(34, 243, 238, 0.2);
+        }
+
+        /* Navigation Buttons */
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 480px) {
+            .action-container { flex-direction: row; justify-content: flex-end; }
+        }
+
+        button.nav-btn {
+            background: linear-gradient(135deg, var(--diamond-cyan), #0891b2);
+            color: white;
+            border: none;
+            padding: 0.95rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        button.nav-btn:hover:not([disabled]) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+        }
+
+        @media (min-width: 480px) { button.nav-btn { width: auto; } }
+        button.nav-btn:disabled { 
+            background: #1e293b; 
+            color: var(--silver-muted); 
+            cursor: not-allowed; 
+            box-shadow: none; 
+            border: 1px solid var(--silver-border);
+        }
+        
+        .score-display { text-align: center; padding: 3rem 0; }
+        .score-num { font-size: 4rem; font-weight: 900; color: var(--diamond-glow); margin-bottom: 1rem; text-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="page active" id="page1">
+        <h1>TOEFL Diamond Focus Suite</h1>
+        <p>A highly sophisticated diagnostic and mastery ecosystem engineered around advanced target syntax errors and specialized reading categories. Predictable layout schemas are entirely eliminated.</p>
+        <div class="grammar-box">
+            <strong>Dynamic Adaptation Active:</strong> To prevent answer placement memory patterns, all distractors are continuously shuffled inside real-time frameworks upon generation. You must capture 5/5 to advance individual security seals.
+        </div>
+        <div class="action-container"><button class="nav-btn" onclick="nextPage()">Initiate Diagnostics &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page2">
+        <h2>Module 1: Modal Preferences ('Would Rather')</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> The phrase <em>would rather</em> serves as an explicit modal auxiliary anchor. It immediately accepts a bare infinitive (uninflected base form). Infinitival components containing <em>"to"</em> or tautological duplicates (such as <em>prefer</em>) break standard core constraints.
+        </div>
+        <div class="page-status" id="status-p2">Score: 0 / 5 (Secure all answers to unlock)</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. She would rather _______ text messages than answer phone calls.</div>
+            <div class="options-grid" data-shuffle="2-1"></div>
+            <div class="feedback-box" id="fb-2-1"></div>
+        </div>
+
+        <div class="exercise-card">
+            <div class="exercise-title">2. Most researchers would rather _______ local archives than travel broad distances.</div>
+            <div class="options-grid" data-shuffle="2-2"></div>
+            <div class="feedback-box" id="fb-2-2"></div>
+        </div>
+
+        <div class="exercise-card">
+            <div class="exercise-title">3. The director would rather 
+                <select class="inline-select" onchange="checkDropdown(this, '2-3', 'cut', 'Correct baseline integration of bare infinitive.', 'Incorrect. Drop alternative prefixes or particle inclusions.')">
+                    <option value="">-- select choice --</option>
+                    <option value="to cut">to cut</option>
+                    <option value="cut">cut</option>
+                    <option value="prefer cut">prefer cut</option>
+                </select> the budget immediately than face an unexpected deficit.
+            </div>
+            <div class="feedback-box" id="fb-2-3"></div>
+        </div>
+
+        <div class="exercise-card">
+            <div class="exercise-title">4. Academics would rather _______ their findings than archive them permanently.</div>
+            <div class="options-grid" data-shuffle="2-4"></div>
+            <div class="feedback-box" id="fb-2-4"></div>
+        </div>
+
+        <div class="exercise-card">
+            <div class="exercise-title">5. Fill in the blank with the single proper base word: <br><br>
+                "I would rather <input type="text" class="text-entry-input" data-ans="wait" placeholder="Enter verb"> for an hour than miss the departure entirely."
+            </div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '2-5', 'Correct! Pure plain base verb entry confirmed.', 'Incorrect. You must use the single uninflected baseline verb: \'wait\'.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-2-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p2" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page3">
+        <h2>Module 2: Advanced Prepositional Complements</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Transformational sequences ending with the target marker <strong>into</strong> necessitate complete concrete plural objects or mass non-count parameters. Truncate clauses containing loose trailing verbs or relative loops.
+        </div>
+        <div class="page-status" id="status-p3">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. The travelers were instructed to pack all sensitive documents into _______.</div>
+            <div class="options-grid" data-shuffle="3-1"></div>
+            <div class="feedback-box" id="fb-3-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Students are encouraged to categorize historical sources into 
+                <select class="inline-select" onchange="checkDropdown(this, '3-2', 'folders', 'Correct matching component configuration.', 'Incorrect. Infinitives or verbal phrases violate assignment properties.')">
+                    <option value="">-- select choice --</option>
+                    <option value="to fold">to fold</option>
+                    <option value="folders">folders</option>
+                </select>.
+            </div>
+            <div class="feedback-box" id="fb-3-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. The mechanics converted the biological waste matter into _______.</div>
+            <div class="options-grid" data-shuffle="3-3"></div>
+            <div class="feedback-box" id="fb-3-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Lab assistants are required to funnel volatile liquids into <input type="text" class="text-entry-input" data-ans="beakers" placeholder="Enter plural noun">.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '3-4', 'Correct objective completion.', 'Incorrect target noun entry.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-3-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Ground crews transformed the open fields into _______.</div>
+            <div class="options-grid" data-shuffle="3-5"></div>
+            <div class="feedback-box" id="fb-3-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p3" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page4">
+        <h2>Module 3: Noun + Noun Modifiers</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Nouns performing descriptive adjectival functions inside compounds are systematically restricted to a singular state. Strip plural markers from descriptive anchors even within macro plural frames.
+        </div>
+        <div class="page-status" id="status-p4">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. The weather <input type="text" class="text-entry-input" data-ans="forecast" placeholder="Enter singular modifier"> updates allowed commuters to avoid the storm.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '4-1', 'Correct singular compound entry.', 'Incorrect. The modifying noun must remain strictly singular.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-4-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. A sudden diamond _______ spike changed market valuations overnight.</div>
+            <div class="options-grid" data-shuffle="4-2"></div>
+            <div class="feedback-box" id="fb-4-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. The laboratory required strict temperature 
+                <select class="inline-select" onchange="checkDropdown(this, '4-3', 'regulation', 'Correct singular nominal format.', 'Incorrect. Do not place extra clauses or plural tags into base noun mod slots.')">
+                    <option value="">-- select choice --</option>
+                    <option value="regulation">regulation</option>
+                    <option value="regulations which">regulations which</option>
+                </select> controls for accuracy.
+            </div>
+            <div class="feedback-box" id="fb-4-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. International trade _______ guidelines are strictly reviewed annual cycles.</div>
+            <div class="options-grid" data-shuffle="4-4"></div>
+            <div class="feedback-box" id="fb-4-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. High performance sports _______ infrastructure is costly to build.</div>
+            <div class="options-grid" data-shuffle="4-5"></div>
+            <div class="feedback-box" id="fb-4-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p4" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page5">
+        <h2>Module 4: Correlative Structures ("Not only... but also")</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Correlative balancing systems demand symmetric coordinating alignment. Identify structural dropouts where raw terms like <em>also</em> operate stripped of their matching anchor <em>but</em>.
+        </div>
+        <div class="page-status" id="status-p5">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Identify the ungrammatical segment below:</div>
+            <div class="error-sentence">The architect <span class="error-word" onclick="checkErr(this,'5-1',false,'','Initial item setup remains correct.')">not only</span> designed the tower <span class="error-word" onclick="checkErr(this,'5-1',false,'','Valid coordinating base component.')">but</span> <span class="error-word" onclick="checkErr(this,'5-1',true,'Correct! \'Engineered\' requires a tracking \'also\' immediately preceding or following it to balance \'not only\'.','')">engineered</span> its entire support columns.</div>
+            <div class="feedback-box" id="fb-5-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Identify the ungrammatical segment below:</div>
+            <div class="error-sentence">Mary <span class="error-word" onclick="checkErr(this,'5-2',false,'','')">not only</span> sings beautifully <span class="error-word" onclick="checkErr(this,'5-2',false,'','')">in</span> theater plays, <span class="error-word" onclick="checkErr(this,'5-2',true,'Correct! The naked adverbial term \'also\' lacks the foundational coordinating hook \'but\'. It must read \'but also plays\'.','')">also</span> plays cello.</div>
+            <div class="feedback-box" id="fb-5-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Identify the ungrammatical segment below:</div>
+            <div class="error-sentence">Oxygen <span class="error-word" onclick="checkErr(this,'5-3',false,'','')">not only</span> supports life <span class="error-word" onclick="checkErr(this,'5-3',false,'','')">on</span> Earth, <span class="error-word" onclick="checkErr(this,'5-3',true,'Correct! Severed coordinating bridge. \'Also\' cannot bind independently across structural components without \'but\'.','')">also</span> fuels stellar combustion.</div>
+            <div class="feedback-box" id="fb-5-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Identify the ungrammatical segment below:</div>
+            <div class="error-sentence">This software <span class="error-word" onclick="checkErr(this,'5-4',false,'','')">not only</span> calculates margins, <span class="error-word" onclick="checkErr(this,'5-4',true,'Correct! Solitary \'also\' is structurally broken; needs pairing alongside \'but\'.','')">also</span> generates invoices <span class="error-word" onclick="checkErr(this,'5-4',false,'','')">automatically</span>.</div>
+            <div class="feedback-box" id="fb-5-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Identify the ungrammatical segment below:</div>
+            <div class="error-sentence">The ocean <span class="error-word" onclick="checkErr(this,'5-5',false,'','')">not only</span> houses reef ecosystems, <span class="error-word" onclick="checkErr(this,'5-5',true,'Correct! Dropping the introductory coordinate \'but\' before \'also\' creates an ungrammatical shift.','')">also</span> regulates global <span class="error-word" onclick="checkErr(this,'5-5',false,'','')">climate</span> trends.</div>
+            <div class="feedback-box" id="fb-5-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p5" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page6">
+        <h2>Module 5: Prepositional Context vs. Active Verb</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Differentiate functional comparison syntax markers from true transitive verbs. Introductory descriptive phrase headers that mean <em>"in contrast to"</em> require the preposition <strong>unlike</strong>, rather than the verb <strong>dislike</strong>.
+        </div>
+        <div class="page-status" id="status-p6">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Identify the invalid structural word:</div>
+            <div class="error-sentence"><span class="error-word" onclick="checkErr(this,'6-1',true,'Correct! This phrase-level sentence starter must act as a comparative preposition (\'Unlike\'), not an active verb (\'Dislike\').','')">Dislike</span> the traditional computer, the quantum <span class="error-word" onclick="checkErr(this,'6-1',false,'','')">variant</span> utilizes complex subatomic positions.</div>
+            <div class="feedback-box" id="fb-6-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. <input type="text" class="text-entry-input" data-ans="Unlike" placeholder="Enter contrast word"> liquid water, ice maintains a highly rigid crystalline geometric structure.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '6-2', 'Correct introductory contrast preposition entry.', 'Incorrect. You must use the comparative preposition form: \'Unlike\'.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-6-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Identify the invalid structural word:</div>
+            <div class="error-sentence"><span class="error-word" onclick="checkErr(this,'6-3',true,'Correct! An active verb cannot operate as a hanging clause-level comparison marker. Use \'Unlike\'.','')">Dislike</span> mammalian species, insects <span class="error-word" onclick="checkErr(this,'6-3',false,'','')">depend</span> heavily upon external environmental temperatures.</div>
+            <div class="feedback-box" id="fb-6-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. 
+                <select class="inline-select" onchange="checkDropdown(this, '6-4', 'Unlike', 'Correct choice.', 'Incorrect. Select the preposition.')">
+                    <option value="">-- select choice --</option>
+                    <option value="Dislike">Dislike</option>
+                    <option value="Unlike">Unlike</option>
+                </select> its predecessor, the upgraded engine functions cleanly without overheating.
+            </div>
+            <div class="feedback-box" id="fb-6-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Identify the invalid structural word:</div>
+            <div class="error-sentence"><span class="error-word" onclick="checkErr(this,'6-5',true,'Correct! This structure requires the comparative preposition \'Unlike\'.','')">Dislike</span> terrestrial plants, marine algae <span class="error-word" onclick="checkErr(this,'6-5',false,'','')">absorb</span> life nutrients directly from waves.</div>
+            <div class="feedback-box" id="fb-6-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p6" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page7">
+        <h2>Module 6: Agent Noun vs. Abstract Action</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Always cross-reference contextual semantics to verify whether a structural slot demands a bare action process or a living professional actor/agent noun title.
+        </div>
+        <div class="page-status" id="status-p7">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Identify the corrupted word configuration:</div>
+            <div class="error-sentence">In his early days as a <span class="error-word" onclick="checkErr(this,'7-1',true,'Correct! \'Direct\' is a verb or adjective. The text demands a professional agent noun: \'director\'.','')">direct</span>, Charlie Chaplin <span class="error-word" onclick="checkErr(this,'7-1',false,'','')">produced</span> 62 short, silent comedy films.</div>
+            <div class="feedback-box" id="fb-7-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Before her assignment as lead 
+                <select class="inline-select" onchange="checkDropdown(this, '7-2', 'investigator', 'Correct human agent selection.', 'Incorrect. A verb cannot serve as an occupational title designation.')">
+                    <option value="">-- select choice --</option>
+                    <option value="investigate">investigate</option>
+                    <option value="investigator">investigator</option>
+                </select>, Clara worked diligently tracking minor lab reports.
+            </div>
+            <div class="feedback-box" id="fb-7-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Known globally as an <input type="text" class="text-entry-input" data-ans="inventor" placeholder="Enter human occupation">, Thomas Edison secured countless patents throughout his long life.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '7-3', 'Correct agent suffix assignment.', 'Incorrect. Use the human agent noun form: \'inventor\'.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-7-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Identify the corrupted word configuration:</div>
+            <div class="error-sentence">During his tenure as managing <span class="error-word" onclick="checkErr(this,'7-4',true,'Correct! Substitute the base verb action with the target job occupation noun title: \'editor\'.','')">edit</span>, the newspaper <span class="error-word" onclick="checkErr(this,'7-4',false,'','')">won</span> awards for outstanding local journalism.</div>
+            <div class="feedback-box" id="fb-7-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Her career as a landscape _______ began shortly after she completed her university degree.</div>
+            <div class="options-grid" data-shuffle="7-5"></div>
+            <div class="feedback-box" id="fb-7-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p7" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page8">
+        <h2>Module 7: Contextual Vocabulary - "Impairs"</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> In high-tier academic prose, the item <strong>impair</strong> strictly denotes systematic structural damage, functional reduction, attenuation, or degradation.
+        </div>
+        <div class="page-status" id="status-p8">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Constant noise pollution impairs avian communication systems.</div>
+            <div class="options-grid" data-shuffle="8-1"></div>
+            <div class="feedback-box" id="fb-8-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Extreme heat accelerates material fatigue and 
+                <select class="inline-select" onchange="checkDropdown(this, '8-2', 'weakens', 'Correct synonym integration.', 'Incorrect context validation.')">
+                    <option value="">-- select choice --</option>
+                    <option value="weakens">weakens</option>
+                    <option value="prolongs">prolongs</option>
+                </select> engine reliability.
+            </div>
+            <div class="feedback-box" id="fb-8-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Sleep deprivation severely impairs cognitive performance metrics.</div>
+            <div class="options-grid" data-shuffle="8-3"></div>
+            <div class="feedback-box" id="fb-8-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Complete the sentence below with a single-word lowercase verb synonym for impairs: <br><br>
+                "Excessive salt concentration <input type="text" class="text-entry-input" data-ans="diminishes" placeholder="Enter synonym verb"> optimal root water absorption."</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '8-4', 'Correct semantic match.', 'Incorrect. Acceptable precise target: \'diminishes\'.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-8-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Glare from high-intensity lights impairs nighttime peripheral vision.</div>
+            <div class="options-grid" data-shuffle="8-5"></div>
+            <div class="feedback-box" id="fb-8-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p8" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page9">
+        <h2>Module 8: Contextual Vocabulary - "Region"</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> The term <strong>region</strong> defines any spatial boundary matrix, structural section, designated zone, area layer, or proximal territory.
+        </div>
+        <div class="page-status" id="status-p9">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. The equatorial region absorbs the highest concentration of solar rays.</div>
+            <div class="options-grid" data-shuffle="9-1"></div>
+            <div class="feedback-box" id="fb-9-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Synaptic activity in the front <input type="text" class="text-entry-input" data-ans="area" placeholder="Enter noun synonym"> of the brain increases during tests.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '9-2', 'Correct spatial substitute tracking.', 'Incorrect. Enter \'area\' to correctly fill this spatial slot.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-9-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Heavy rainfall occurs primarily in the mountainous region.</div>
+            <div class="options-grid" data-shuffle="9-3"></div>
+            <div class="feedback-box" id="fb-9-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Geologists discovered dense rock beds throughout the coastal 
+                <select class="inline-select" onchange="checkDropdown(this, '9-4', 'vicinity', 'Correct contextual choice.', 'Incorrect.')">
+                    <option value="">-- select choice --</option>
+                    <option value="vicinity">vicinity</option>
+                    <option value="depth">depth</option>
+                </select>.
+            </div>
+            <div class="feedback-box" id="fb-9-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Air temperature drops predictably in the upper atmospheric region.</div>
+            <div class="options-grid" data-shuffle="9-5"></div>
+            <div class="feedback-box" id="fb-9-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p9" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page10">
+        <h2>Module 9: Textual Location Finding</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Isolate specific outcome indicators from initial experimental control baselines when executing line identification search tasks.
+        </div>
+        <div class="page-status" id="status-p10">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Passage: "[1-2] Rats showed improvement. [3-4] The chemical element decayed rapidly." Where is the biological improvement described?</div>
+            <div class="options-grid" data-shuffle="10-1"></div>
+            <div class="feedback-box" id="fb-10-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Passage: "[1-3] Test subjects performed consistently. [4-5] Maze traversal speed doubled." Where is the explicit speed transformation located?</div>
+            <div class="options-grid" data-shuffle="10-2"></div>
+            <div class="feedback-box" id="fb-10-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Passage: "[1-5] Cells grew normally. [6-7] Accelerated cell tissue regeneration was clearly observed." Where is the accelerated growth stated?</div>
+            <div class="options-grid" data-shuffle="10-3"></div>
+            <div class="feedback-box" id="fb-10-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Passage: "[1-7] The dosage remained unchanged. [8-10] Memory retention marks escalated." Which specific line cluster tracks the active mental benefit? 
+                <select class="inline-select" onchange="checkDropdown(this, '10-4', 'Lines 8-10', 'Correct parsing alignment.', 'Incorrect section.')">
+                    <option value="">-- select choice --</option>
+                    <option value="Lines 1-7">Lines 1-7</option>
+                    <option value="Lines 8-10">Lines 8-10</option>
+                </select>
+            </div>
+            <div class="feedback-box" id="fb-10-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Passage: "[1-2] Samples degraded. [3-5] Nerve cell pathways demonstrated structural widening." Where is the structural widening pathway effect located? Use format entry: <input type="text" class="text-entry-input" data-ans="Lines 3-5" placeholder="e.g. Lines X-Y"></div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '10-5', 'Correct line parameter parsed.', 'Incorrect formatting sequence. Enter: \'Lines 3-5\'')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-10-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p10" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page11">
+        <h2>Module 10: Rhetorical Patterns of Organization</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Identify structure archetypes. Text modules establishing an opening conceptual thesis ruleset and providing case sample points operate in <strong>statement and illustration</strong> schemas.
+        </div>
+        <div class="page-status" id="status-p11">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. A text defining a concept followed directly by three experimental real-world examples behaves as:</div>
+            <div class="options-grid" data-shuffle="11-1"></div>
+            <div class="feedback-box" id="fb-11-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Outlining the hypothesis of nerve growth factor, then presenting lab observations is:</div>
+            <div class="options-grid" data-shuffle="11-2"></div>
+            <div class="feedback-box" id="fb-11-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. A passage asserting a thesis on structural architecture followed by sample layouts is an example of statement and <input type="text" class="text-entry-input" data-ans="illustration" placeholder="Enter pattern mode">.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '11-3', 'Correct mapping.', 'Incorrect structural component title formulation.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-11-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Describing a behavior and illustrating it with observations of wild animals uses:</div>
+            <div class="options-grid" data-shuffle="11-4"></div>
+            <div class="feedback-box" id="fb-11-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Detailing an environmental rule followed by case studies of impacted rivers uses: 
+                <select class="inline-select" onchange="checkDropdown(this, '11-5', 'Statement and illustration', 'Correct pattern classification match.', 'Incorrect schema selection.')">
+                    <option value="">-- select choice --</option>
+                    <option value="Statement and illustration">Statement and illustration</option>
+                    <option value="Process description">Process description</option>
+                </select>
+            </div>
+            <div class="feedback-box" id="fb-11-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p11" onclick="nextPage()" disabled>Next Module &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page12">
+        <h2>Module 11: Conceptual Analogies (General to Specific)</h2>
+        <div class="grammar-box">
+            <strong>Strategy Reference:</strong> Isolate taxonomic configurations. If base pairs mirror specific instances mapping onto parent classification groups, enforce matching constraints throughout.
+        </div>
+        <div class="page-status" id="status-p12">Score: 0 / 5</div>
+        
+        <div class="exercise-card">
+            <div class="exercise-title">1. Nerve factor : Protein :: Alzheimer’s : _______</div>
+            <div class="options-grid" data-shuffle="12-1"></div>
+            <div class="feedback-box" id="fb-12-1"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">2. Oxygen : Element :: Diabetes : <input type="text" class="text-entry-input" data-ans="disorder" placeholder="Enter class category">.</div>
+            <div class="validation-row">
+                <button class="verify-btn" onclick="checkTextInput(this, '12-2', 'Correct taxonomical category assignment.', 'Incorrect taxonomy classification.')">Validate Input</button>
+            </div>
+            <div class="feedback-box" id="fb-12-2"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">3. Granite : Rock :: Influenza : _______</div>
+            <div class="options-grid" data-shuffle="12-3"></div>
+            <div class="feedback-box" id="fb-12-3"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">4. Violin : Instrument :: Penicillin : 
+                <select class="inline-select" onchange="checkDropdown(this, '12-4', 'antibiotic', 'Correct classification grouping.', 'Incorrect target cluster selection.')">
+                    <option value="">-- select choice --</option>
+                    <option value="infection">infection</option>
+                    <option value="antibiotic">antibiotic</option>
+                </select>
+            </div>
+            <div class="feedback-box" id="fb-12-4"></div>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-title">5. Cobra : Reptile :: Migration : _______</div>
+            <div class="options-grid" data-shuffle="12-5"></div>
+            <div class="feedback-box" id="fb-12-5"></div>
+        </div>
+        <div class="action-container"><button class="nav-btn" id="next-p12" onclick="nextPage()" disabled>Finish Suite &rarr;</button></div>
+    </div>
+
+    <div class="page" id="page13">
+        <div class="score-display">
+            <div class="score-num">55 / 55</div>
+            <h2>Diamond Master Verification Attained</h2>
+            <p>Every dynamic syntax variant shuffle configuration and alternative item format deployment scenario has been successfully completed with absolute accuracy. Diagnostics closed.</p>
+            <button class="nav-btn" onclick="location.reload()">Reset Dynamic Matrix</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const totalPages = 13;
+    let scores = {};
+
+    // Shuffler Matrix Data Store
+    const itemsData = {
+        '2-1': [
+            {text: 'send', correct: true, okFb: "Correct! 'Send' is a bare infinitive following the modal phrase.", errFb: ""},
+            {text: 'to send', correct: false, okFb: "", errFb: "Incorrect particle 'to' included."},
+            {text: 'prefer sending', correct: false, okFb: "", errFb: "Incorrect redundant expression combination."}
+        ],
+        '2-2': [
+            {text: 'utilize', correct: true, okFb: "Correct plain uninflected form.", errFb: ""},
+            {text: 'utilizing', correct: false, okFb: "", errFb: "Incorrect gerund formation selection."},
+            {text: 'to utilize', correct: false, okFb: "", errFb: "Incorrect infinitival particle attached."}
+        ],
+        '2-4': [
+            {text: 'publish', correct: true, okFb: "Correct base implementation.", errFb: ""},
+            {text: 'to publish', correct: false, okFb: "", errFb: "Incorrect particle structural pairing."},
+            {text: 'prefer publishing', correct: false, okFb: "", errFb: "Incorrect structural overlapping terminology choice."}
+        ],
+        '3-1': [
+            {text: 'safes', correct: true, okFb: "Correct plural complement placement.", errFb: ""},
+            {text: 'where safe', correct: false, okFb: "", errFb: "Incorrect dangling structural location modifier fraction."}
+        ],
+        '3-3': [
+            {text: 'fuel', correct: true, okFb: "Correct un-count product mass assignment.", errFb: ""},
+            {text: 'is fuel', correct: false, okFb: "", errFb: "Incorrect secondary predicate rupture."}
+        ],
+        '3-5': [
+            {text: 'runways', correct: true, okFb: "Correct plural structural assignment destination noun.", errFb: ""},
+            {text: 'runway is', correct: false, okFb: "", errFb: "Incorrect auxiliary verb integration."}
+        ],
+        '4-2': [
+            {text: 'price', correct: true, okFb: "Correct singular descriptor form selection.", errFb: ""},
+            {text: 'priced highly', correct: false, okFb: "", errFb: "Incorrect complex clausal split formatting approach."}
+        ],
+        '4-4': [
+            {text: 'tariff', correct: true, okFb: "Correct singular compounding nominal implementation.", errFb: ""},
+            {text: 'tariffs laws', correct: false, okFb: "", errFb: "Incorrect compound structure modifier component plural marker placement."}
+        ],
+        '4-5': [
+            {text: 'stadium', correct: true, okFb: "Correct pure element nominal design formatting configuration.", errFb: ""},
+            {text: 'stadiums structure', correct: false, okFb: "", errFb: "Incorrect layout structural double compounding error."}
+        ],
+        '7-5': [
+            {text: 'photographer', correct: true, okFb: "Correct living operational career suffix configuration applied.", errFb: ""},
+            {text: 'photograph', correct: false, okFb: "", errFb: "Incorrect. 'Photograph' describes the non-living concrete object product output, not the agent practitioner human career role."}
+        ],
+        '8-1': [
+            {text: 'damages', correct: true, okFb: "Correct contextual match validation confirmation.", errFb: ""},
+            {text: 'assists', correct: false, okFb: "", errFb: "Incorrect. 'Assists' has a positive orientation, conflicting with 'impairs'."}
+        ],
+        '8-3': [
+            {text: 'hinders', correct: true, okFb: "Correct synonym match confirmation.", errFb: ""},
+            {text: 'stabilizes', correct: false, okFb: "", errFb: "Incorrect contrast framework expression selected."}
+        ],
+        '8-5': [
+            {text: 'compromises', correct: true, okFb: "Correct logical meaning interpretation selection.", errFb: ""},
+            {text: 'perfects', correct: false, okFb: "", errFb: "Incorrect opposite target word orientation chosen."}
+        ],
+        '9-1': [
+            {text: 'zone', correct: true, okFb: "Correct spatial synonym implementation.", errFb: ""},
+            {text: 'distance', correct: false, okFb: "", errFb: "Incorrect metric attribute select entry."}
+        ],
+        '9-3': [
+            {text: 'territory', correct: true, okFb: "Correct geographical coordinate mapping assignment matching.", errFb: ""},
+            {text: 'horizon', correct: false, okFb: "", errFb: "Incorrect linear visual visibility threshold mapping."}
+        ],
+        '9-5': [
+            {text: 'section', correct: true, okFb: "Correct layered space classification block resolution.", errFb: ""},
+            {text: 'line', correct: false, okFb: "", errFb: "Incorrect thin wire path boundary selection entry tag."}
+        ],
+        '10-1': [
+            {text: 'Lines 1-2', correct: true, okFb: "Correct explicit parameter segment discovery validation tracking.", errFb: ""},
+            {text: 'Lines 3-4', correct: false, okFb: "", errFb: "Incorrect baseline data array window reference choice."}
+        ],
+        '10-2': [
+            {text: 'Lines 4-5', correct: true, okFb: "Correct outcome metrics mapping parameter localized window.", errFb: ""},
+            {text: 'Lines 1-3', correct: false, okFb: "", errFb: "Incorrect baseline trace zone boundary selected configuration."}
+        ],
+        '10-3': [
+            {text: 'Lines 6-7', correct: true, okFb: "Correct acceleration metric location parsed choice selection.", errFb: ""},
+            {text: 'Lines 1-5', correct: false, okFb: "", errFb: "Incorrect standard control group layer trace choice indicator."}
+        ],
+        '11-1': [
+            {text: 'Statement and illustration', correct: true, okFb: "Correct organizational paradigm resolution selection tracking confirmation.", errFb: ""},
+            {text: 'Chronological order', correct: false, okFb: "", errFb: "Incorrect format structure. Text displays specific instance examples rather than sequential absolute timestamp timelines."}
+        ],
+        '11-2': [
+            {text: 'Statement and illustration', correct: true, okFb: "Correct thesis execution mapping framework tracking.", errFb: ""},
+            {text: 'Alphabetical listing', correct: false, okFb: "", errFb: "Incorrect framework formatting choice selection orientation target."}
+        ],
+        '11-4': [
+            {text: 'Statement and illustration', correct: true, okFb: "Correct analytical model extraction identification target selection.", errFb: ""},
+            {text: 'Compare and contrast', correct: false, okFb: "", errFb: "Incorrect. The text does not systematically contrast two discrete systems side by side."}
+        ],
+        '12-1': [
+            {text: 'disease', correct: true, okFb: "Correct parent tax group selection assignment tracking confirmation.", errFb: ""},
+            {text: 'forgetfulness', correct: false, okFb: "", errFb: "Incorrect item choice option. 'Forgetfulness' behaves as an internal physiological symptom profile indicator, not a taxonomic category classification."}
+        ],
+        '12-3': [
+            {text: 'virus', correct: true, okFb: "Correct taxonomical tier category mapping tracking resolution.", errFb: ""},
+            {text: 'fever', correct: false, okFb: "", errFb: "Incorrect symptom expression attribute item tracker select target."}
+        ],
+        '12-5': [
+            {text: 'behavior', correct: true, okFb: "Correct parent ecological group classification assignment confirmation matching.", errFb: ""},
+            {text: 'birds', correct: false, okFb: "", errFb: "Incorrect group agent execution unit parameter element selection indicator."}
+        ]
+    };
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    function initializeDynamicShufflers() {
+        document.querySelectorAll('.options-grid[data-shuffle]').forEach(grid => {
+            const qId = grid.getAttribute('data-shuffle');
+            const sourceArr = itemsData[qId];
+            if (!sourceArr) return;
+
+            let instanceArr = [...sourceArr];
+            shuffleArray(instanceArr);
+
+            grid.innerHTML = '';
+            instanceArr.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = item.text;
+                btn.onclick = function() {
+                    checkMC(btn, qId, item.correct, item.okFb, item.errFb);
+                };
+                grid.appendChild(btn);
+            });
+        });
+    }
+
+    function updateProgressBar() {
+        document.getElementById('progressFill').style.width = ((currentPage - 1) / (totalPages - 1)) * 100 + '%';
+    }
+
+    function nextPage() {
+        if (currentPage < totalPages) {
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            currentPage++;
+            const nextPanel = document.getElementById(`page${currentPage}`);
+            nextPanel.classList.add('active');
+            updateProgressBar();
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function evaluatePageProgress(pageId) {
+        let prefix = pageId.replace('page', '');
+        let count = 0;
+        for (let key in scores) {
+            if (key.startsWith(prefix + '-') && scores[key] === true) count++;
+        }
+        
+        let statusBox = document.getElementById(`status-p${prefix}`);
+        if(statusBox) {
+            statusBox.innerText = `Score: ${count} / 5`;
+            if(count === 5) {
+                statusBox.className = "page-status ready";
+                statusBox.innerText = "Score: 5 / 5 — Security Seal Unlocked!";
+                document.getElementById(`next-p${prefix}`).disabled = false;
+            } else {
+                statusBox.className = "page-status";
+            }
+        }
+    }
+
+    function checkMC(btn, qId, isCorrect, correctFb, wrongFb) {
+        let grid = btn.parentElement;
+        if (grid.querySelector('.correct')) return;
+
+        let fbBox = document.getElementById(`fb-${qId}`);
+        grid.querySelectorAll('.option-btn').forEach(b => b.className = 'option-btn');
+        
+        if(isCorrect) {
+            btn.className = 'option-btn correct';
+            scores[qId] = true;
+            fbBox.className = "feedback-box success";
+            fbBox.innerText = correctFb;
+        } else {
+            btn.className = 'option-btn wrong';
+            scores[qId] = false;
+            fbBox.className = "feedback-box error";
+            fbBox.innerText = wrongFb;
+        }
+        evaluatePageProgress(btn.closest('.page').id);
+    }
+
+    function checkErr(span, qId, isCorrect, correctFb, wrongFb) {
+        let parent = span.parentElement;
+        if (parent.querySelector('.correct')) return;
+
+        let fbBox = document.getElementById(`fb-${qId}`);
+        parent.querySelectorAll('.error-word').forEach(s => s.className = 'error-word');
+        
+        if(isCorrect) {
+            span.className = 'error-word correct';
+            scores[qId] = true;
+            fbBox.className = "feedback-box success";
+            fbBox.innerText = correctFb;
+        } else {
+            span.className = 'error-word wrong';
+            scores[qId] = false;
+            fbBox.className = "feedback-box error";
+            fbBox.innerText = wrongFb;
+        }
+        evaluatePageProgress(span.closest('.page').id);
+    }
+
+    function checkDropdown(selectEl, qId, correctVal, correctFb, wrongFb) {
+        if (selectEl.classList.contains('correct')) return;
+
+        let fbBox = document.getElementById(`fb-${qId}`);
+        if(selectEl.value === correctVal) {
+            selectEl.className = "inline-select correct";
+            scores[qId] = true;
+            fbBox.className = "feedback-box success";
+            fbBox.innerText = correctFb;
+        } else {
+            selectEl.className = "inline-select wrong";
+            scores[qId] = false;
+            fbBox.className = "feedback-box error";
+            fbBox.innerText = wrongFb;
+        }
+        evaluatePageProgress(selectEl.closest('.page').id);
+    }
+
+    function checkTextInput(btn, qId, correctFb, wrongFb) {
+        let parentCard = btn.closest('.exercise-card');
+        let inputEl = parentCard.querySelector('.text-entry-input');
+        if (inputEl.classList.contains('correct')) return;
+
+        let fbBox = document.getElementById(`fb-${qId}`);
+        let cleanedUserAns = inputEl.value.trim();
+        let targetTarget = inputEl.getAttribute('data-ans');
+
+        if(cleanedUserAns.toLowerCase() === targetTarget.toLowerCase()) {
+            inputEl.className = "text-entry-input correct";
+            scores[qId] = true;
+            fbBox.className = "feedback-box success";
+            fbBox.innerText = correctFb;
+            btn.disabled = true;
+        } else {
+            inputEl.className = "text-entry-input wrong";
+            scores[qId] = false;
+            fbBox.className = "feedback-box error";
+            fbBox.innerText = wrongFb;
+        }
+        evaluatePageProgress(btn.closest('.page').id);
+    }
+
+    window.onload = function() {
+        initializeDynamicShufflers();
+    };
+</script>
+
+</body>
+</html>
